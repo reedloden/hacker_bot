@@ -10,11 +10,11 @@ bot = Cinch::Bot.new do
     c.nick = "hacker_bot"
   end
 
-  on :message, "hello" do |m|
+  on :message, /\bhello\b/ do |m|
     m.reply "Hello, #{m.user.nick}. Currently you can ask me: 'latest program', 'user {username}'."
   end
 
-  on :message, "hacker_bot" do |m|
+  on :message, /\bhacker_bot\b/ do |m|
     m.reply "Hello, #{m.user.nick}. Currently you can ask me: 'latest program', 'user {username}'."
   end
 
