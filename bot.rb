@@ -18,21 +18,32 @@ bot = Cinch::Bot.new do
     m.reply "Hello, #{m.user.nick}. Currently you can ask me: 'latest program', 'user {username}'."
   end
 
-  on :message, /^user (.+)/ do |m, username|
-    user = username
-    profile = Nokogiri::HTML(open("https://hackerone.com/#{user}"))
+  on :message, /^whois (.+)$/ do |m, handle|
+    profile = Nokogiri::HTML(open("https://hackerone.com/#{handle}"))
 
-    is_program = profile.css(".report-vulnerability").count
+    is_team = profile.css(".report-vulnerability").count
+    is_user = profile.search("[text()*='Targets hacked']").count
 
-    if is_program == 0
-      amount  = profile.css(".profile-stats-amount").first.inner_html
-      targets = profile.css(".profile-stats-amount").last.inner_html
-      link    = "https://hackerone.com/" + user
-      m.reply "#{user} has #{amount} bugs found and #{targets} hacked targets (#{link})."
+    data = profile.css(".profile-stats-amount")
+    link    = "https://hackerone.com/" + handle
+
+    if is_team > 0
+      does_bounties = data.count >= 3
+      base_bounty = does_bounties ? data.first.inner_html : '$0'
+      participants = does_bounties ? data[1].inner_html : data[0].inner_html
+      bugs_closed = data.last.inner_html
+
+      m.reply "Team #{handle} offers a #{base_bounty} minimum bounty, closed out #{bugs_closed} "\
+              "bugs and thanked #{participants} unique hackers (#{link})."
+    elsif is_user > 0
+      amount  = data.first.inner_html
+      targets = data.last.inner_html
+
+      m.reply "#{handle} found #{amount} bugs and hacked #{targets} unique targets (#{link})."
     else
-      m.reply "That is not a valid user."
+      m.reply "That is not a valid profile."
     end
-end
+  end
 
   on :message, "latest program" do |m|
     programs = Nokogiri::HTML(open("https://hackerone.com/programs", {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}))
