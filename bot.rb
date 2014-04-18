@@ -15,7 +15,7 @@ bot = Cinch::Bot.new do
   end
 
   on :message, "hacker_bot" do |m|
-    m.reply "Hello, #{m.user.nick}. Currently you can ask me: 'latest program'."
+    m.reply "Hello, #{m.user.nick}. Currently you can ask me: 'latest program', 'user {username}'."
   end
 
   on :message, /^user (.+)/ do |m, username|
@@ -36,7 +36,6 @@ end
 
   on :message, "latest program" do |m|
     programs = Nokogiri::HTML(open("https://hackerone.com/programs", {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}))
-    new  = programs.css(".program-list-item").count
     name = programs.css(".new-hacktivity-profile-bio-name").first.inner_html
     link = "https://hackerone.com" + programs.css(".new-hacktivity-profile-bio-name").first["href"]
     m.reply "The latest program is: #{name} (#{link})"
