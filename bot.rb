@@ -11,11 +11,11 @@ bot = Cinch::Bot.new do
   end
 
   on :message, /\bhello\b/ do |m|
-    m.reply "Hello, #{m.user.nick}. Currently you can ask me: 'latest program', 'user {username}'."
+    m.reply "Hello, #{m.user.nick}. Currently you can ask me: 'latest program', 'whois {username/teamname}'."
   end
 
   on :message, /\bhacker_bot\b/ do |m|
-    m.reply "Hello, #{m.user.nick}. Currently you can ask me: 'latest program', 'user {username}'."
+    m.reply "Hello, #{m.user.nick}. Currently you can ask me: 'latest program', 'whois {username/teamname}'."
   end
 
   on :message, /^whois (.+)$/ do |m, handle|
